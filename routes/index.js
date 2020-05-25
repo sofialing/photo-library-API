@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const { login, register } = require('../controllers/auth_controller');
 const { createRules } = require('../validation/profile');
-const { register } = require('../controllers/auth_controller');
 
-/* GET home page. */
-router.get('/', (req, res) => {
-	res.send({ status: 'success', title: 'Express' });
-});
+/* Login using JWT-token */
+router.post('/login', login);
 
 /* Register a new account */
-router.post('/api/v1/register', createRules, register);
+router.post('/register', createRules, register);
 
 module.exports = router;
