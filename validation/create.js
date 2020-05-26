@@ -3,14 +3,18 @@
  */
 
 const { body } = require('express-validator');
-const { User } = require('../models')
+const { User, Photo } = require('../models')
 
 const checkEmail = async value => {
 	const user = await new User({ email: value }).fetch({ require: false });
 
-	return user
-		? Promise.reject('Email already exists.')
-		: Promise.resolve();
+	return user ? Promise.reject('Email already exists.') : Promise.resolve();
+}
+
+const checkPhoto = async (value, { req }) => {
+	const photo = await Photo.fetchById(value, req.user.data.id, { require: false });
+
+	return photo ? Promise.resolve() : Promise.reject('Not a valid photo id.');
 }
 
 const createAccount = [
@@ -30,8 +34,13 @@ const createPhoto = [
 	body('comment').optional().trim(),
 ];
 
+const addPhotoToAlbum = [
+	body('photo_id').trim().notEmpty().custom(checkPhoto)
+];
+
 module.exports = {
 	createAccount,
 	createAlbum,
 	createPhoto,
+	addPhotoToAlbum,
 };
