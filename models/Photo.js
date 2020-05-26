@@ -11,5 +11,11 @@ module.exports = bookshelf => {
 		albums() {
 			return this.belongsToMany('Album');
 		}
-	});
+	},
+		{
+			fetchById(id, user_id = null, fetchOptions = {}) {
+				return new this({ id, user_id }).fetch(fetchOptions);
+			},
+		}
+	);
 };
