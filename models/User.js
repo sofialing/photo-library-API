@@ -9,6 +9,9 @@ module.exports = bookshelf => {
 		hidden: ['id', 'password'],
 		photos() {
 			return this.hasMany('Photo');
+		},
+		albums() {
+			return this.hasMany('Album');
 		}
 	}, {
 		hashSaltRounds: 10,
