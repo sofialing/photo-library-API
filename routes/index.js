@@ -9,7 +9,10 @@ router.post('/login', login);
 /* Register a new account */
 router.post('/register', createAccount, register);
 
-/* Show users photos */
+/* Show authenticated users photos */
 router.use('/photos', [validateToken], require('./photos'))
+
+/* Show authenticated users albums */
+router.use('/albums', [validateToken], require('./albums'))
 
 module.exports = router;
