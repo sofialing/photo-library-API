@@ -8,9 +8,9 @@ const { index, show, store } = require('../controllers/albums_controller');
 router.get('/', index);
 
 /* Get a specific album */
-router.get('/:photoId', show);
+router.get('/:albumId', show);
 
 /* Store a new photo in album */
-router.post('/:photoId', store);
+router.post('/:albumId', store);
 
 module.exports = router;
