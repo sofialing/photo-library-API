@@ -7,6 +7,9 @@ module.exports = bookshelf => {
 		hidden: ['id', 'user_id'],
 		user() {
 			return this.belongsTo('User');
+		},
+		albums() {
+			return this.belongsToMany('Album');
 		}
 	});
 };
