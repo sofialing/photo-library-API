@@ -20,6 +20,10 @@ const createAccount = [
 	body('last_name').trim().isLength({ min: 2 }),
 ];
 
+const createAlbum = [
+	body('title').trim().notEmpty(),
+]
+
 const createPhoto = [
 	body('title').trim().notEmpty(),
 	body('url').trim().notEmpty(),
@@ -28,5 +32,6 @@ const createPhoto = [
 
 module.exports = {
 	createAccount,
+	createAlbum,
 	createPhoto,
 };
