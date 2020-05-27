@@ -100,6 +100,15 @@ const storePhotos = async (req, res) => {
         const user_id = req.user.data.id;
         const album = await Album.fetchById(req.params.albumId, user_id);
 
+        // check if album exists and if user is authorized to add photos to it
+        if (!album) {
+            res.status(401).send({
+                status: 'fail',
+                message: `Not allowed to add photos to album with id: ${req.params.albumId}`
+            });
+            return;
+        }
+
         if (Array.isArray(photo_id)) {
             photo_id.forEach(async id => {
                 const photo = await new Photo({ id, user_id }).fetch();
