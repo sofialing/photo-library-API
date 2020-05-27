@@ -22,6 +22,37 @@ const index = async (req, res) => {
     }
 }
 
+/* Delete a specific album and remove all associations */
+const destroy = async (req, res) => {
+    try {
+        const album = await Album.fetchById(req.params.albumId, req.user.data.id, { withRelated: 'photos' });
+
+        // check if album exists and belongs to authenticated user
+        if (!album) {
+            res.status(401).send({
+                status: 'fail',
+                message: `Not allowed to delete album with id: ${req.params.albumId}`
+            });
+            return;
+        }
+
+        // remove all associations 
+        await album.photos().detach();
+        // delete photo
+        await album.destroy();
+
+        res.status(204).send({
+            status: 'succes',
+            data: null
+        })
+    } catch (error) {
+        res.status(500).send({
+            status: 'error',
+            message: 'Something went wrong when trying to delete album.',
+        });
+    }
+}
+
 /* Get a specific album */
 const show = async (req, res) => {
     const albumId = req.params.albumId;
@@ -134,6 +165,7 @@ const storePhotos = async (req, res) => {
 
 module.exports = {
     index,
+    destroy,
     show,
     store,
     storePhotos,

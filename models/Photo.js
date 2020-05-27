@@ -14,7 +14,7 @@ module.exports = bookshelf => {
 		}
 	},
 		{
-			fetchById(id, user_id = null, fetchOptions = {}) {
+			fetchById(id, user_id, fetchOptions = {}) {
 				return new this({ id, user_id }).fetch(fetchOptions);
 			},
 		}
