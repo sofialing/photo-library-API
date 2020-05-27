@@ -1,11 +1,11 @@
 /**
- * User Model
+ * Register Photo Model
  */
 module.exports = bookshelf => {
 	return bookshelf.model('Photo', {
-		tableName: 'photos',
-		requireFetch: false,
 		hidden: ['user_id'],
+		requireFetch: false,
+		tableName: 'photos',
 		user() {
 			return this.belongsTo('User');
 		},

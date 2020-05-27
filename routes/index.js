@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { login, register } = require('../controllers/auth_controller');
 const { validateToken } = require('../controllers/middlewares/auth');
-const { createAccount } = require('../validation/create');
+const { createAccount } = require('../validation/rules');
 
 /* Login using JWT-token */
 router.post('/login', login);

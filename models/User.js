@@ -1,12 +1,14 @@
 /**
- * User Model
+ * Register User Model
  */
 const bcrypt = require('bcrypt');
 
 module.exports = bookshelf => {
 	return bookshelf.model('User', {
-		tableName: 'users',
 		hidden: ['id', 'password'],
+		requireFetch: false,
+		tableName: 'users',
+
 		photos() {
 			return this.hasMany('Photo');
 		},
@@ -15,17 +17,16 @@ module.exports = bookshelf => {
 		}
 	}, {
 		hashSaltRounds: 10,
-		login: async function (email, password) {
+		async login(email, password) {
 			const user = await new this({ email }).fetch({ require: false });
 
 			if (!user) {
 				return false;
 			}
 
-			const hash = user.get('password');
-			const result = await bcrypt.compare(password, hash);
-
-			return result ? user : false;
+			return await bcrypt.compare(password, user.get('password'))
+				? user
+				: false;
 		}
 	}
 	);

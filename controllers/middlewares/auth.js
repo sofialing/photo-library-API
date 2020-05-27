@@ -1,7 +1,6 @@
 /**
  * Authentication middleware
  */
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 /* Get token från HTTP headers */

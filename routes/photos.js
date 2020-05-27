@@ -3,7 +3,7 @@
  */
 const router = require('express').Router();
 const { index, destroy, show, store } = require('../controllers/photos_controller');
-const { createPhoto } = require('../validation/create');
+const { createPhoto } = require('../validation/rules');
 
 /* Get all photos */
 router.get('/', index);

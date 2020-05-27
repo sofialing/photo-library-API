@@ -1,26 +1,31 @@
 /**
- * Validation rules to create data
+ * Validation rules to submit data
  */
 
 const { body } = require('express-validator');
 const { User, Photo } = require('../models')
 
 const checkEmail = async value => {
-	const user = await new User({ email: value }).fetch({ require: false });
+	const user = await new User({ email: value }).fetch();
 
-	return user ? Promise.reject('Email already exists.') : Promise.resolve();
+	if (user) {
+		return Promise.reject('Email already exists.')
+	}
 }
 
 const checkPhoto = async (value, { req }) => {
-	// check single photo_id
+	// check single photo id
 	if (!Array.isArray(value)) {
-		const photo = await Photo.fetchById(value, req.user.data.id, { require: false });
-		return photo ? Promise.resolve() : Promise.reject();
+		const photo = await Photo.fetchById(value, req.user.data.id);
+
+		if (!photo) {
+			return Promise.reject('Not a valid photo id.');
+		}
 	}
 
-	// check multiple photo_id
+	// check array with multiple photo ids
 	for (let i = 0; i < value.length; i++) {
-		const photo = await Photo.fetchById(value[i], req.user.data.id, { require: false });
+		const photo = await Photo.fetchById(value[i], req.user.data.id);
 
 		if (!photo) {
 			return Promise.reject(`Not a valid photo id: ${value[i]}`);
@@ -29,7 +34,7 @@ const checkPhoto = async (value, { req }) => {
 };
 
 const addPhotoToAlbum = [
-	body('photo_id').notEmpty().custom(checkPhoto).withMessage('Not a valid photo id.')
+	body('photo_id').notEmpty().custom(checkPhoto)
 ];
 
 const createAccount = [

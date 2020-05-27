@@ -15,18 +15,22 @@ const index = async (req, res) => {
             data: { photos }
         });
     } catch (error) {
-        res.sendStatus(404);
+        res.status(500).send({
+            status: 'error',
+            message: 'An unexpected error occurred when trying to get photos.',
+        });
+        throw error;
     }
 }
 
-/* Delete a specific photo */
+/* Delete a specific photo and remove all associations */
 const destroy = async (req, res) => {
     try {
         const photo = await Photo.fetchById(req.params.photoId, req.user.data.id, { withRelated: 'albums' });
 
         // check if photo exists and belongs to authenticated user
         if (!photo) {
-            res.status(401).send({
+            res.status(403).send({
                 status: 'fail',
                 message: `Not allowed to delete photo with id: ${req.params.photoId}`
             });
@@ -46,22 +50,38 @@ const destroy = async (req, res) => {
     } catch (error) {
         res.status(500).send({
             status: 'error',
-            message: 'Something went wrong when trying to delete photo.',
+            message: 'An unexpected error occurred when trying to delete photo.',
         });
+        throw error;
     }
 
 }
 
 /* Get a specific photo */
 const show = async (req, res) => {
-    const photoId = req.params.photoId;
-    const userId = req.user.data.id;
-
     try {
-        const photo = await new Photo({ id: photoId, user_id: userId }).fetch();
-        res.send({ photo });
+        const photo = await Photo.fetchById(req.params.photoId, req.user.data.id);
+
+        // check if photo exists and belongs to authenticated user
+        if (!photo) {
+            res.status(404).send({
+                status: 'fail',
+                message: `Could not find photo with id: ${req.params.photoId}`
+            })
+            return;
+        }
+
+        res.send({
+            status: 'succes',
+            data: { photo }
+        });
+
     } catch (error) {
-        res.sendStatus(404);
+        res.status(500).send({
+            status: 'error',
+            message: 'An unexpected error occurred when trying to get photo.',
+        });
+        throw error;
     }
 };
 
@@ -78,20 +98,22 @@ const store = async (req, res) => {
         return;
     }
 
-    const validData = matchedData(req);
-    validData.user_id = req.user.data.id;
+    const data = matchedData(req);
+    data.user_id = req.user.data.id;
 
     try {
-        const photo = await new Photo(validData).save();
-        res.send({
+        const photo = await new Photo(data).save();
+        res.status(201).send({
             status: 'success',
             data: { photo }
         });
+
     } catch (error) {
         res.status(500).send({
             status: 'error',
-            message: error.message,
+            message: 'An unexpected error occurred when trying to store new photo.',
         });
+        throw error;
     }
 }
 

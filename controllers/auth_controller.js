@@ -1,5 +1,5 @@
 /**
- * Auth Controller
+ * Authentication Controller
  */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -29,9 +29,7 @@ const login = async (req, res) => {
 
 	res.send({
 		status: 'success',
-		data: {
-			access_token
-		}
+		data: { access_token }
 	});
 };
 
@@ -48,26 +46,25 @@ const register = async (req, res) => {
 		return;
 	}
 
-	const validData = matchedData(req);
+	const data = matchedData(req);
 	try {
 		// hash password
-		validData.password = await bcrypt.hash(
-			validData.password,
-			User.hashSaltRounds
-		);
+		data.password = await bcrypt.hash(data.password, User.hashSaltRounds);
 
 		// save new user to db
-		await new User(validData).save();
+		await new User(data).save();
 
 		res.status(201).send({
 			status: 'success',
 			data: null,
 		});
+
 	} catch (error) {
 		res.status(500).send({
 			status: 'error',
-			message: error.message,
+			message: 'An unexpected error occurred when trying to register new user.',
 		});
+		throw error;
 	}
 };
 
