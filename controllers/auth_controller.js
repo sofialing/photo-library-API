@@ -20,18 +20,66 @@ const login = async (req, res) => {
 	}
 
 	// construct payload
-	const payload = { data: { id: user.get('id'), email: user.get('email') } }
+	const payload = {
+		data: {
+			id: user.get('id'),
+			email: user.get('email')
+		}
+	};
 
 	// sign payload and get access-token
 	const access_token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
 		expiresIn: process.env.ACCESS_TOKEN_LIFETIME || '1h',
 	});
 
+	// sign payload and get refresh-token
+	const refresh_token = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+		expiresIn: process.env.REFRESH_TOKEN_LIFETIME || '1w',
+	});
+
 	res.send({
 		status: 'success',
-		data: { access_token }
+		data: {
+			access_token,
+			refresh_token
+		}
 	});
 };
+
+/* Issue new access-token using the refresh-token */
+const refresh = (req, res) => {
+	const token = getToken(req);
+
+	// check if token exists
+	if (!token) {
+		res.status(401).send({
+			status: 'fail',
+			message: 'Request header missing token.'
+		});
+		return;
+	}
+
+	try {
+		// verify token using refresh-token
+		const { data } = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+		const payload = { data };
+
+		// sign new token using access-token
+		const access_token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_LIFETIME || '1h', });
+
+		res.send({
+			status: 'success',
+			data: { access_token }
+		});
+
+	} catch (error) {
+		res.status(403).send({
+			status: 'fail',
+			message: 'Invalid token.'
+		});
+		throw error;
+	}
+}
 
 /* Register a new account */
 const register = async (req, res) => {
@@ -68,7 +116,27 @@ const register = async (req, res) => {
 	}
 };
 
+/* Get token från HTTP headers */
+const getToken = req => {
+	// check for authorization header
+	if (!req.headers.authorization) {
+		return false;
+	}
+
+	// get auth type and token
+	const [authType, token] = req.headers.authorization.split(' ');
+
+	// check if authorization type is Bearer
+	if (authType.toLowerCase() !== 'bearer') {
+		return false;
+	}
+
+	return token;
+};
+
 module.exports = {
+	getToken,
 	login,
+	refresh,
 	register,
 };
