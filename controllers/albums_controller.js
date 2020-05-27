@@ -2,6 +2,7 @@
  * Album Controller
  */
 const { matchedData, validationResult } = require('express-validator');
+const _ = require('lodash');
 const { Album, User, Photo } = require('../models')
 
 /* Get all albums */
@@ -131,11 +132,9 @@ const storePhotos = async (req, res) => {
         return;
     }
 
-    const { photo_id } = matchedData(req);
-
     try {
-        const user_id = req.user.data.id;
-        const album = await Album.fetchById(req.params.albumId, user_id);
+        let { photo_id } = matchedData(req);
+        const album = await Album.fetchById(req.params.albumId, req.user.data.id);
 
         // check if album exists and if user is authorized to add photos to it
         if (!album) {
@@ -146,15 +145,15 @@ const storePhotos = async (req, res) => {
             return;
         }
 
-        if (Array.isArray(photo_id)) {
-            photo_id.forEach(async id => {
-                const photo = await Photo.fetchById(id, user_id);
-                await album.photos().attach(photo);
-            });
-        } else {
-            const photo = await Photo.fetchById(photo_id, user_id);
+        // convert single photo id to array
+        photo_id = _.isArray(photo_id) ? photo_id : photo_id.toString().split();
+
+        // get photos and attach then to album
+        _.uniq(photo_id).forEach(async id => {
+            const photo = await Photo.fetchById(id, req.user.data.id);
+            await album.photos().detach(photo); // detach first to prevent duplicates in db
             await album.photos().attach(photo);
-        }
+        });
 
         res.status(201).send({
             status: 'success',

@@ -3,34 +3,43 @@
  */
 
 const { body } = require('express-validator');
+const _ = require('lodash');
 const { User, Photo } = require('../models')
 
-const checkEmail = async value => {
-	const user = await new User({ email: value }).fetch();
+const checkEmail = async input => {
+	const user = await new User({ email: input }).fetch();
 
 	if (user) {
 		return Promise.reject('Email already exists.')
 	}
 }
 
-const checkPhoto = async (value, { req }) => {
+const checkPhoto = async (input, { req }) => {
+	// check if input is valid type
+	if (!_.isInteger(input) && !_.isArray(input)) {
+		return Promise.reject('Photo id must be an integer or array.');
+	}
+
+	// check array with multiple photo ids
+	if (_.isArray(input)) {
+		for (let i = 0; i < input.length; i++) {
+			const photo = await Photo.fetchById(input[i], req.user.data.id);
+
+			if (!photo) {
+				return Promise.reject(`Not a valid photo id: ${input[i]}`);
+			}
+		}
+	}
+
 	// check single photo id
-	if (!Array.isArray(value)) {
-		const photo = await Photo.fetchById(value, req.user.data.id);
+	if (_.isInteger(input)) {
+		const photo = await Photo.fetchById(input, req.user.data.id);
 
 		if (!photo) {
 			return Promise.reject('Not a valid photo id.');
 		}
 	}
 
-	// check array with multiple photo ids
-	for (let i = 0; i < value.length; i++) {
-		const photo = await Photo.fetchById(value[i], req.user.data.id);
-
-		if (!photo) {
-			return Promise.reject(`Not a valid photo id: ${value[i]}`);
-		}
-	}
 };
 
 const addPhotoToAlbum = [
