@@ -12,10 +12,25 @@ const checkEmail = async value => {
 }
 
 const checkPhoto = async (value, { req }) => {
-	const photo = await Photo.fetchById(value, req.user.data.id, { require: false });
+	// check single photo_id
+	if (!Array.isArray(value)) {
+		const photo = await Photo.fetchById(value, req.user.data.id, { require: false });
+		return photo ? Promise.resolve() : Promise.reject();
+	}
 
-	return photo ? Promise.resolve() : Promise.reject('Not a valid photo id.');
-}
+	// check multiple photo_id
+	for (let i = 0; i < value.length; i++) {
+		const photo = await Photo.fetchById(value[i], req.user.data.id, { require: false });
+
+		if (!photo) {
+			return Promise.reject(`Not a valid photo id: ${value[i]}`);
+		}
+	}
+};
+
+const addPhotoToAlbum = [
+	body('photo_id').notEmpty().custom(checkPhoto).withMessage('Not a valid photo id.')
+];
 
 const createAccount = [
 	body('email').trim().isLength({ min: 8 }).custom(checkEmail),
@@ -34,13 +49,9 @@ const createPhoto = [
 	body('comment').optional().trim(),
 ];
 
-const addPhotoToAlbum = [
-	body('photo_id').trim().notEmpty().custom(checkPhoto)
-];
-
 module.exports = {
+	addPhotoToAlbum,
 	createAccount,
 	createAlbum,
 	createPhoto,
-	addPhotoToAlbum,
 };
