@@ -2,8 +2,8 @@
  * Routes for '/albums'
  */
 const router = require('express').Router();
-const { index, destroy, show, store, storePhotos } = require('../controllers/albums_controller');
-const { addPhotoToAlbum, createAlbum } = require('../validation/rules');
+const { index, destroy, show, store, addPhotos, removePhotos } = require('../controllers/albums_controller');
+const { validatePhotoId, createAlbum } = require('../validation/rules');
 
 /* Get all albums */
 router.get('/', index);
@@ -18,7 +18,9 @@ router.post('/', createAlbum, store);
 router.delete('/:albumId', destroy);
 
 /* Add photos to a specific album */
-router.post('/:albumId', addPhotoToAlbum, storePhotos);
+router.post('/:albumId/photos', validatePhotoId, addPhotos);
 
+/* Remove photos from a specific album */
+router.delete('/:albumId/photos', validatePhotoId, removePhotos);
 
 module.exports = router;

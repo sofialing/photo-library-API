@@ -6,6 +6,7 @@ const { body } = require('express-validator');
 const _ = require('lodash');
 const { User, Photo } = require('../models')
 
+/* Check if email already exists */
 const checkEmail = async input => {
 	const user = await new User({ email: input }).fetch();
 
@@ -14,18 +15,19 @@ const checkEmail = async input => {
 	}
 }
 
-const checkPhoto = async (input, { req }) => {
-	// check if input is valid type
+/* Check if photo id exists and belongs to authenticated user */
+const checkPhotoId = async (input, { req }) => {
+	// only accept input as integer or array
 	if (!_.isInteger(input) && !_.isArray(input)) {
 		return Promise.reject('Photo id must be an integer or array.');
 	}
 
-	// check array with multiple photo ids
+	// check array of multiple photo ids
 	if (_.isArray(input)) {
 		for (let i = 0; i < input.length; i++) {
 			const photo = await Photo.fetchById(input[i], req.user.data.id);
 
-			if (!photo) {
+			if (!photo || !_.isInteger(input[i])) {
 				return Promise.reject(`Not a valid photo id: ${input[i]}`);
 			}
 		}
@@ -39,12 +41,7 @@ const checkPhoto = async (input, { req }) => {
 			return Promise.reject('Not a valid photo id.');
 		}
 	}
-
 };
-
-const addPhotoToAlbum = [
-	body('photo_id').notEmpty().custom(checkPhoto)
-];
 
 const createAccount = [
 	body('email').trim().isLength({ min: 8 }).custom(checkEmail),
@@ -63,9 +60,13 @@ const createPhoto = [
 	body('comment').optional().trim(),
 ];
 
+const validatePhotoId = [
+	body('photo_id').notEmpty().custom(checkPhotoId)
+];
+
 module.exports = {
-	addPhotoToAlbum,
 	createAccount,
 	createAlbum,
 	createPhoto,
+	validatePhotoId,
 };

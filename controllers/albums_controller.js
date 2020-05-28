@@ -120,7 +120,7 @@ const store = async (req, res) => {
 }
 
 /* Add photos to album */
-const storePhotos = async (req, res) => {
+const addPhotos = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(422).send({
@@ -169,10 +169,60 @@ const storePhotos = async (req, res) => {
     }
 }
 
+/* Remove photos from album */
+const removePhotos = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(422).send({
+            status: 'fail',
+            data: errors
+                .array()
+                .map(error => ({ key: error.param, message: error.msg })),
+        });
+        return;
+    }
+
+    try {
+        let { photo_id } = matchedData(req);
+        const album = await Album.fetchById(req.params.albumId, req.user.data.id);
+
+        // check if album exists and if user is authorized to remove photos from it
+        if (!album) {
+            res.status(403).send({
+                status: 'fail',
+                message: `Not allowed to remove photos from album with id: ${req.params.albumId}`
+            });
+            return;
+        }
+
+        // convert single photo id to array
+        photo_id = _.isArray(photo_id) ? photo_id : photo_id.toString().split();
+
+        // get photos and detach them from album
+        _.uniq(photo_id).forEach(async id => {
+            const photo = await Photo.fetchById(id, req.user.data.id);
+            await album.photos().detach(photo);
+        });
+
+        res.send({
+            status: 'success',
+            data: null
+        });
+
+    } catch (error) {
+        res.status(500).send({
+            status: 'error',
+            message: 'An unexpected error occurred when trying to remove photos from album.',
+        });
+        throw error;
+    }
+}
+
 module.exports = {
     index,
     destroy,
     show,
     store,
-    storePhotos,
+    addPhotos,
+    removePhotos
 }
