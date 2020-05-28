@@ -44,7 +44,7 @@ const destroy = async (req, res) => {
         await album.destroy();
 
         res.status(204).send({
-            status: 'succes',
+            status: 'success',
             data: null
         })
     } catch (error) {
@@ -74,7 +74,7 @@ const show = async (req, res) => {
         }
 
         res.send({
-            status: 'succes',
+            status: 'success',
             data: { album }
         });
 
@@ -119,8 +119,8 @@ const store = async (req, res) => {
     }
 }
 
-/* Add photos to album */
-const addPhotos = async (req, res) => {
+/* Handle album->photo associations (add photos to album / remove photos from album) */
+const handlePhotos = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(422).send({
@@ -136,11 +136,12 @@ const addPhotos = async (req, res) => {
         let { photo_id } = matchedData(req);
         const album = await Album.fetchById(req.params.albumId, req.user.data.id);
 
-        // check if album exists and if user is authorized to add photos to it
+        // check if album exists and if user is authorized to add or remove photos
         if (!album) {
+            const action = req.method === 'POST' ? 'add photos to' : 'remove photos from';
             res.status(403).send({
                 status: 'fail',
-                message: `Not allowed to add photos to album with id: ${req.params.albumId}`
+                message: `Not allowed to ${action} album with id: ${req.params.albumId}`
             });
             return;
         }
@@ -148,60 +149,13 @@ const addPhotos = async (req, res) => {
         // convert single photo id to array
         photo_id = _.isArray(photo_id) ? photo_id : photo_id.toString().split();
 
-        // get photos and attach then to album
+        // get photos and detach/attach to album
         _.uniq(photo_id).forEach(async id => {
             const photo = await Photo.fetchById(id, req.user.data.id);
-            await album.photos().detach(photo); // detach first to prevent duplicates in db
-            await album.photos().attach(photo);
-        });
-
-        res.status(201).send({
-            status: 'success',
-            data: null
-        });
-
-    } catch (error) {
-        res.status(500).send({
-            status: 'error',
-            message: 'An unexpected error occurred when trying to add photos to album.',
-        });
-        throw error;
-    }
-}
-
-/* Remove photos from album */
-const removePhotos = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        res.status(422).send({
-            status: 'fail',
-            data: errors
-                .array()
-                .map(error => ({ key: error.param, message: error.msg })),
-        });
-        return;
-    }
-
-    try {
-        let { photo_id } = matchedData(req);
-        const album = await Album.fetchById(req.params.albumId, req.user.data.id);
-
-        // check if album exists and if user is authorized to remove photos from it
-        if (!album) {
-            res.status(403).send({
-                status: 'fail',
-                message: `Not allowed to remove photos from album with id: ${req.params.albumId}`
-            });
-            return;
-        }
-
-        // convert single photo id to array
-        photo_id = _.isArray(photo_id) ? photo_id : photo_id.toString().split();
-
-        // get photos and detach them from album
-        _.uniq(photo_id).forEach(async id => {
-            const photo = await Photo.fetchById(id, req.user.data.id);
-            await album.photos().detach(photo);
+            await album.photos().detach(photo); // (always detach to prevent duplicates in db)
+            if (req.method === 'POST') {
+                await album.photos().attach(photo);
+            }
         });
 
         res.send({
@@ -212,7 +166,7 @@ const removePhotos = async (req, res) => {
     } catch (error) {
         res.status(500).send({
             status: 'error',
-            message: 'An unexpected error occurred when trying to remove photos from album.',
+            message: `An unexpected error occurred when trying to ${req.method === 'POST' ? 'add photos to' : 'remove photos from'} album.`,
         });
         throw error;
     }
@@ -223,6 +177,5 @@ module.exports = {
     destroy,
     show,
     store,
-    addPhotos,
-    removePhotos
+    handlePhotos
 }
