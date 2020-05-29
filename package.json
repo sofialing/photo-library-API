@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"start": "nodemon ./bin/www",
+		"start": "node ./bin/www",
 		"dev": "DEBUG=06-library:* nodemon --inspect ./bin/www"
 	},
 	"dependencies": {
@@ -19,5 +19,8 @@
 		"lodash": "^4.17.15",
 		"morgan": "~1.9.1",
 		"mysql": "^2.18.1"
+	},
+	"engines": {
+		"node": "12.x"
 	}
 }
