@@ -1,20 +1,20 @@
 /**
- * Routes for '/photos'
+ * Photo Routes
  */
 const router = require('express').Router();
-const { index, destroy, show, store } = require('../controllers/photos_controller');
+const { index, show, store, destroy } = require('../controllers/photos_controller');
 const { createPhoto } = require('../validation/rules');
 
-/* Get all photos */
+// Get all photos.
 router.get('/', index);
 
-/* Get a specific photo */
+// Get a photo by ID.
 router.get('/:photoId', show);
 
-/* Delete a specific photo */
-router.delete('/:photoId', destroy);
-
-/* Store a new photo */
+// Create a new photo.
 router.post('/', createPhoto, store);
+
+// Delete a photo by ID.
+router.delete('/:photoId', destroy);
 
 module.exports = router;

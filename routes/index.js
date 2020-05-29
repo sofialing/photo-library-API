@@ -3,20 +3,19 @@ const { login, refresh, register } = require('../controllers/auth_controller');
 const { validateToken } = require('../controllers/middlewares/auth');
 const { createAccount } = require('../validation/rules');
 
-/* Show authenticated users photos */
-router.use('/photos', [validateToken], require('./photos'))
-
-/* Show authenticated users albums */
+// Album Routes.
 router.use('/albums', [validateToken], require('./albums'))
 
-/* Login using JWT-token */
+// Photo Routes.
+router.use('/photos', [validateToken], require('./photos'))
+
+// Login and get access-token.
 router.post('/login', login);
 
-/* Refresh JWT-token */
+// Refresh access-token.
 router.post('/refresh', refresh);
 
-/* Register a new account */
+// Create a new user.
 router.post('/register', createAccount, register);
-
 
 module.exports = router;

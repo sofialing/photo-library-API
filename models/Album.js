@@ -1,5 +1,5 @@
 /**
- * Register Album Model
+ * Album Model
  */
 module.exports = bookshelf => {
 	return bookshelf.model('Album', {

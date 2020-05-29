@@ -1,5 +1,5 @@
 /**
- * Register User Model
+ * User Model
  */
 const bcrypt = require('bcrypt');
 

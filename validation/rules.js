@@ -6,7 +6,7 @@ const { body } = require('express-validator');
 const _ = require('lodash');
 const { User, Photo } = require('../models')
 
-/* Check if email already exists */
+// Check if email already exists
 const checkEmail = async input => {
 	const user = await new User({ email: input }).fetch();
 
@@ -15,14 +15,14 @@ const checkEmail = async input => {
 	}
 }
 
-/* Check if photo id exists and belongs to authenticated user */
+// Check if photo ID exists and belongs to authenticated user 
 const checkPhotoId = async (input, { req }) => {
 	// only accept input as integer or array
 	if (!_.isInteger(input) && !_.isArray(input)) {
 		return Promise.reject('Photo id must be an integer or array.');
 	}
 
-	// check array of multiple photo ids
+	// check array of multiple photo IDs
 	if (_.isArray(input)) {
 		for (let i = 0; i < input.length; i++) {
 			const photo = await Photo.fetchById(input[i], req.user.data.id);
@@ -33,7 +33,7 @@ const checkPhotoId = async (input, { req }) => {
 		}
 	}
 
-	// check single photo id
+	// check single photo ID
 	if (_.isInteger(input)) {
 		const photo = await Photo.fetchById(input, req.user.data.id);
 

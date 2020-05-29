@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const { matchedData, validationResult } = require('express-validator');
 const { User } = require('../models');
 
-/* Login and issue an access-token */
+/* Login and get access-token */
 const login = async (req, res) => {
 	const user = await User.login(req.body.email, req.body.password);
 
@@ -46,7 +46,7 @@ const login = async (req, res) => {
 	});
 };
 
-/* Issue new access-token using the refresh-token */
+/* Refresh access-token */
 const refresh = (req, res) => {
 	const token = getToken(req);
 
@@ -81,7 +81,7 @@ const refresh = (req, res) => {
 	}
 }
 
-/* Register a new account */
+/* Create a new account */
 const register = async (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -135,8 +135,8 @@ const getToken = req => {
 };
 
 module.exports = {
-	getToken,
 	login,
 	refresh,
 	register,
+	getToken,
 };
