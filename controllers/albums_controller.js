@@ -95,6 +95,52 @@ const store = async (req, res) => {
     }
 }
 
+/* Update an album by ID */
+const update = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(422).send({
+            status: 'fail',
+            data: errors
+                .array()
+                .map(error => ({ key: error.param, message: error.msg })),
+        });
+        return;
+    }
+
+
+    try {
+        const data = matchedData(req);
+        const album = await Album.fetchById(req.params.albumId, req.user.data.id);
+
+        // check if album exists and belongs to authenticated user
+        if (!album) {
+            res.status(404).send({
+                status: 'fail',
+                message: `Could not find album with id: ${req.params.albumId}`
+            })
+            return;
+        }
+
+        // save changes
+        const updatedAlbum = await album.save(data)
+
+        res.send({
+            status: 'success',
+            data: {
+                album: updatedAlbum
+            }
+        });
+
+    } catch (error) {
+        res.status(500).send({
+            status: 'error',
+            message: 'An unexpected error occurred when trying to update photo.',
+        });
+        throw error;
+    }
+}
+
 /* Delete an album by ID (and remove all associations) */
 const destroy = async (req, res) => {
     try {
@@ -188,6 +234,7 @@ module.exports = {
     index,
     show,
     store,
+    update,
     destroy,
     handlePhotos
 }
