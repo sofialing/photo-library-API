@@ -38,6 +38,14 @@ Get a album by ID.
 
 Create a new album.
 
+### `PUT /albums/:albumId`
+
+Update an album by ID.
+
+### `DELETE /albums/:albumId`
+
+Delete an album by ID.
+
 ### `POST /albums/:albumId/photos`
 
 Add photo(s) to album.
