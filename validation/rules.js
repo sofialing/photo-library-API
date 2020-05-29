@@ -60,6 +60,12 @@ const createPhoto = [
 	body('comment').optional().trim(),
 ];
 
+const updatePhoto = [
+	body('title').optional().trim().notEmpty(),
+	body('url').optional().trim().notEmpty(),
+	body('comment').optional().optional().trim(),
+]
+
 const validatePhotoId = [
 	body('photo_id').notEmpty().custom(checkPhotoId)
 ];
@@ -68,5 +74,6 @@ module.exports = {
 	createAccount,
 	createAlbum,
 	createPhoto,
+	updatePhoto,
 	validatePhotoId,
 };
