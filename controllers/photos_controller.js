@@ -118,6 +118,7 @@ const update = async (req, res) => {
             return;
         }
 
+        // save changes
         const updatedPhoto = await photo.save(data)
 
         res.send({
@@ -130,7 +131,7 @@ const update = async (req, res) => {
     } catch (error) {
         res.status(500).send({
             status: 'error',
-            message: 'An unexpected error occurred when trying to store new photo.',
+            message: 'An unexpected error occurred when trying to update photo.',
         });
         throw error;
     }
