@@ -17,13 +17,14 @@ router.post('/', createAlbum, store);
 // Update an album by ID.
 router.put('/:albumId', updateAlbum, update);
 
+// Delete an album by ID.
+router.delete('/:albumId', destroy);
+
 // Add photo(s) to album.
 router.post('/:albumId/photos', validatePhotoId, handlePhotos);
 
 // Remove photo(s) from album.
 router.delete('/:albumId/photos', validatePhotoId, handlePhotos);
 
-// Delete an album by ID.
-router.delete('/:albumId', destroy);
 
 module.exports = router;

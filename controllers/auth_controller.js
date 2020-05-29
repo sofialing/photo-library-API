@@ -69,7 +69,9 @@ const refresh = (req, res) => {
 
 		res.send({
 			status: 'success',
-			data: { access_token }
+			data: {
+				access_token
+			}
 		});
 
 	} catch (error) {

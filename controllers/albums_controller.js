@@ -135,7 +135,7 @@ const update = async (req, res) => {
     } catch (error) {
         res.status(500).send({
             status: 'error',
-            message: 'An unexpected error occurred when trying to update photo.',
+            message: 'An unexpected error occurred when trying to update album.',
         });
         throw error;
     }
@@ -179,6 +179,7 @@ const destroy = async (req, res) => {
  * Add photo(s) to album / Remove photo(s) from album
  */
 const handlePhotos = async (req, res) => {
+    const action = req.method === 'POST' ? 'add photos to' : 'remove photos from';
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(422).send({
@@ -196,7 +197,6 @@ const handlePhotos = async (req, res) => {
 
         // check if album exists and if user is authorized to add or remove photos
         if (!album) {
-            const action = req.method === 'POST' ? 'add photos to' : 'remove photos from';
             res.status(403).send({
                 status: 'fail',
                 message: `Not allowed to ${action} album with id: ${req.params.albumId}`
@@ -204,7 +204,7 @@ const handlePhotos = async (req, res) => {
             return;
         }
 
-        // convert single photo id to array
+        // convert single photo ID to array
         photo_id = _.isArray(photo_id) ? photo_id : photo_id.toString().split();
 
         // get photos and detach/attach to album
@@ -224,7 +224,7 @@ const handlePhotos = async (req, res) => {
     } catch (error) {
         res.status(500).send({
             status: 'error',
-            message: `An unexpected error occurred when trying to ${req.method === 'POST' ? 'add photos to' : 'remove photos from'} album.`,
+            message: `An unexpected error occurred when trying to ${action} album.`,
         });
         throw error;
     }
