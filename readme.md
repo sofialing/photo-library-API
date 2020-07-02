@@ -9,7 +9,7 @@ The API is available at https://photo-library-api.herokuapp.com. Responses are s
 The Photo Library API uses HTTP verbs appropriate to each action.
 
 | Verb     | Description           |
-| -------- |-----------------------|
+| :------- | :-------------------- |
 | `GET`    | Retrieving resources. |
 | `POST`   | Creating resources.   |
 | `PUT`    | Updating resources.   |
@@ -18,7 +18,7 @@ The Photo Library API uses HTTP verbs appropriate to each action.
 ## Endpoints
 
 | Endpoint   | Description                             |
-| ---------- |---------------------------------------- |
+| :--------- |:--------------------------------------- |
 | `/albums`  | Handle albums. Authentication required. |
 | `/photos`  | Handle photos. Authentication required. |
 | `/login`   | Login and Authentication.               |
@@ -52,7 +52,7 @@ GET /photos/:photoId
 #### Parameters
 
 | Param     | Type      | Description                |
-| --------- | --------- | -------------------------- |
+| :-------- | :-------- | :------------------------- |
 | `photoId` | `integer` | The photo’s ID. `Required` |
 
 ***
@@ -68,7 +68,7 @@ POST /photos
 #### Parameters
 
 | Param     | Type     | Description                              |
-| --------- |----------| ---------------------------------------- |
+| :-------- | :--------| :--------------------------------------- |
 | `title`   | `string` | The title of the photo. `Required`       |
 | `url`     | `string` | The url of the photo. `Required`         |
 | `comment` | `string` | The description of the photo. `Optional` |
@@ -86,7 +86,7 @@ PUT /photos/:photoId
 #### Parameters
 
 | Param     | Type     | Description                              |
-| --------- |----------| ---------------------------------------- |
+| :-------- | :--------| :--------------------------------------- |
 | `photoId` | `integer`| The photo’s ID. `Required`               |
 | `title`   | `string` | The title of the photo. `Optional`       |
 | `url`     | `string` | The url of the photo. `Optional`         |
@@ -105,10 +105,8 @@ DELETE /photos/:photoId
 #### Parameters
 
 | Param     | Type     | Description                |
-| --------- |----------| -------------------------- |
+| :-------- | :--------| :------------------------- |
 | `photoId` | `integer`| The photo’s ID. `Required` |
-
-***
 
 ## `/albums`
 
@@ -136,8 +134,8 @@ GET /albums/:albumId
 
 #### Parameters
 
-| Param     | Type      | Description                |
-| --------- | --------- | -------------------------- |
+| Param     | Type      | Description               |
+| :-------- | :-------- | :------------------------ |
 | `albumId` | `integer` | The album’s ID. `Required`|
 
 ***
@@ -153,7 +151,7 @@ POST /albums/:albumId
 #### Parameters
 
 | Param     | Type     | Description                        |
-| --------- |----------| ---------------------------------- |
+| :-------- | :--------| :--------------------------------- |
 | `title`   | `string` | The title of the album. `Required` |
 
 ***
@@ -169,7 +167,7 @@ PUT /albums/:albumId
 #### Parameters
 
 | Param     | Type     | Description                        |
-| --------- |----------| ---------------------------------- |
+| :-------- | :--------| :--------------------------------- |
 | `albumId` | `integer`| The album’s ID. `Required`         |
 | `title`   | `string` | The title of the album. `Optional` |
 
@@ -186,7 +184,7 @@ DELETE /albums/:albumId
 #### Parameters
 
 | Param     | Type     | Description                |
-| --------- |----------| -------------------------- |
+| :-------- | :--------| :------------------------- |
 | `albumId` | `integer`| The album’s ID. `Required` |
 
 ***
@@ -202,7 +200,7 @@ POST /albums/:albumId/photos
 #### Parameters
 
 | Param     | Type                 | Description                                     |
-| --------- |--------------------- | ----------------------------------------------- |
+| :-------- | :------------------- | :---------------------------------------------- |
 | `albumId` | `integer`            | The album’s ID. `Required`                      |
 | `photo_id`| `integer` or `array` | The photo’s ID (single or multiple). `Required` |
 
@@ -219,11 +217,9 @@ DELETE /albums/:albumId/photos
 #### Parameters
 
 | Param     | Type                 | Description                                     |
-| --------- |--------------------- | ----------------------------------------------- |
+| :-------- | :------------------  | :---------------------------------------------- |
 | `albumId` | `integer`            | The album’s ID. `Required`                      |
 | `photo_id`| `integer` or `array` | The photo’s ID (single or multiple). `Required` |
-
-***
 
 ## `/login`
 
@@ -238,7 +234,7 @@ POST /login
 #### Parameters
 
 | Param      | Type     | Description                                |
-| ---------- |--------- | ------------------------------------------ |
+| :--------- | :------- | :----------------------------------------- |
 | `email`    | `string` | The registered user's email. `Required`    |
 | `password` | `string` | The registered user's password. `Required` |
 
@@ -262,8 +258,6 @@ On future requests, send access token via the HTTP Authorization header:
 Authorization: Bearer ACCESS_TOKEN
 ```
 
-***
-
 ## `/refresh`
 
 ### Refresh access token
@@ -275,8 +269,6 @@ POST /refresh
 
 Authorization: Bearer REFRESH_TOKEN
 ```
-
-***
 
 ## `/register`
 
@@ -291,7 +283,7 @@ POST /register
 #### Parameters
 
 | Param        | Type     | Description                           |
-| ------------ |--------- | ------------------------------------- |
+| :----------- | :------- | :------------------------------------ |
 | `email`      | `string` | The new user's email. `Required`      |
 | `password`   | `string` | The new user's password. `Required`   |
 | `first_name` | `string` | The new user's first name. `Required` |
